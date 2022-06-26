@@ -52,12 +52,12 @@ let mapleader = " "
 autocmd BufEnter * filetype detect
 
 "for c
-autocmd FileType c nnoremap <leader>t :AsyncRun clang -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
-autocmd FileType c nnoremap <leader>b :AsyncRun clang -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address<CR>
+autocmd FileType c nnoremap <leader>t :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
+autocmd FileType c nnoremap <leader>b :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
 
 "for cpp
-autocmd FileType cpp nnoremap <leader>t :AsyncRun clang++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
-autocmd FileType cpp nnoremap <leader>b :AsyncRun clang++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address<CR>
+autocmd FileType cpp nnoremap <leader>t :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
+autocmd FileType cpp nnoremap <leader>b :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
 
 nnoremap <leader>m :AsyncRun make 
 nnoremap <leader>rr :AsyncRun build/
