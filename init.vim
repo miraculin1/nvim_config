@@ -31,9 +31,6 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': 
 " Use release branch (recommend)
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" Or build from source code by using yarn: https://yarnpkg.com
-Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
-
 Plug 'airblade/vim-gitgutter'
 
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
@@ -72,7 +69,7 @@ nnoremap <leader>o :copen<CR>
 "works in nvim
 "
 "
-:nmap <leader>d :vs term://lldb ./build/%:t:r<CR>
+:nmap <leader>d :vs term://gdb ./build/%:t:r<CR>
 "
 :nnoremap <leader>p :MarkdownPreviewToggle<CR>
 
