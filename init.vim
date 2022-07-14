@@ -36,6 +36,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
 Plug 'preservim/nerdcommenter'
+Plug 'machakann/vim-sandwich'
 " Initialize plugin system
 call plug#end()
 
