@@ -35,6 +35,7 @@ Plug 'airblade/vim-gitgutter'
 
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
+Plug 'preservim/nerdcommenter'
 " Initialize plugin system
 call plug#end()
 
@@ -59,8 +60,8 @@ autocmd FileType cpp nnoremap <leader>b :AsyncRun g++ -std=c++17 $(VIM_FILENAME)
 nnoremap <leader>m :AsyncRun make 
 nnoremap <leader>rr :AsyncRun build/
 nnoremap <leader>o :copen<CR>
-:nnoremap <leader>c "+yy
-:vnoremap <leader>c "+y
+nnoremap <leader>m "+yy
+vnoremap <leader>m "+y
 
 
 """"""Abanden""""""
@@ -220,4 +221,32 @@ command! -nargs=0 Prettier :CocCommand prettier.formatFile
 vmap <leader>f  <Plug>(coc-format-select)
 nmap <leader>f  <Plug>(coc-format)
 
+"nerdcommenter
+""""""""""""""""""""""""""""""""""""""
+" Create default mappings
+let g:NERDCreateDefaultMappings = 1
+
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+
+" Use compact syntax for prettified multi-line comments
+let g:NERDCompactSexyComs = 1
+
+" Align line-wise comment delimiters flush left instead of following code indentation
+" let g:NERDDefaultAlign = 'left'
+
+" Set a language to use its alternate delimiters by default
+let g:NERDAltDelims_java = 1
+
+" Add your own custom formats or override the defaults
+let g:NERDCustomDelimiters = { 'c': { 'left': '/*','right': '*/' } }
+
+" Allow commenting and inverting empty lines (useful when commenting a region)
+let g:NERDCommentEmptyLines = 1
+
+" Enable trimming of trailing whitespace when uncommenting
+let g:NERDTrimTrailingWhitespace = 1
+
+" Enable NERDCommenterToggle to check all selected lines is commented or not 
+let g:NERDToggleCheckAllLines = 1
 
