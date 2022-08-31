@@ -37,6 +37,8 @@ Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
 Plug 'preservim/nerdcommenter'
 Plug 'machakann/vim-sandwich'
+
+Plug 'wellle/context.vim'
 " Initialize plugin system
 call plug#end()
 
@@ -130,7 +132,7 @@ set ruler
 set showmatch
 set incsearch
 set nobackup
-set autochdir
+"set autochdir
 set history=1000
 set autoread
 set listchars=tab:»■,trail:■
@@ -288,3 +290,7 @@ let g:NERDTrimTrailingWhitespace = 1
 " Enable NERDCommenterToggle to check all selected lines is commented or not 
 let g:NERDToggleCheckAllLines = 1
 
+"sticky scroll
+""""""""""""""""""""
+let g:context_enabled = 1
+let g:context_max_height = 10
