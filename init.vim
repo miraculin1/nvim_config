@@ -77,7 +77,9 @@ vnoremap <leader>m "+y
 "
 :nnoremap <leader>p :MarkdownPreviewToggle<CR>
 
-:nnoremap <TAB><TAB> :bn<CR>
+:nnoremap <TAB>j :bn<CR>
+:nnoremap <TAB>k :bp<CR>
+:nnoremap <TAB>n :bw<CR>
 
 :nnoremap X <c-v>
 
