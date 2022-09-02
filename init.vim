@@ -296,3 +296,18 @@ let g:NERDToggleCheckAllLines = 1
 """"""""""""""""""""
 let g:context_enabled = 1
 let g:context_max_height = 10
+
+" MarkdownEditing Syntax
+""""""""""""""""""""""""
+" 禁用所有令人疑惑的简写
+
+" show original
+let g:vim_markdown_conceal = 0
+
+" about LaTeX
+let g:vim_markdown_math = 1
+let g:tex_conceal = ""
+let g:vim_markdown_math = 1
+
+" about code blocks
+let g:vim_markdown_conceal_code_blocks = 0
