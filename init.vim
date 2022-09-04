@@ -311,3 +311,7 @@ let g:vim_markdown_math = 1
 
 " about code blocks
 let g:vim_markdown_conceal_code_blocks = 0
+
+"GitGutter
+""""""""""""""""
+let g:gitgutter_enabled = 0
