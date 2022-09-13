@@ -60,6 +60,12 @@ autocmd FileType c nnoremap <leader>b :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o 
 autocmd FileType cpp nnoremap <leader>t :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
 autocmd FileType cpp nnoremap <leader>b :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
 
+"for java
+""""""""""""""
+"since there is a bug causing jdt.ls lsp always asume the editing file is exist
+"on disk resart coc after save would bypass this
+autocmd BufNewFile *.java :w | CocRestart
+
 nnoremap <leader>m :AsyncRun make 
 nnoremap <leader>rr :AsyncRun build/
 nnoremap <leader>o :copen<CR>
@@ -158,7 +164,8 @@ let g:coc_global_extensions = [
     \ 'coc-html',
     \ 'coc-prettier',
     \ 'coc-snippets',
-    \ 'coc-java',]
+    \ 'coc-java',
+    \ 'coc-cmake',]
 " 用 <C-j> 在 snippet 里选择下一个参数 <C-j> 上一个
 
 "转跳时可以不用保存，未保存文件留在 buffer 里
