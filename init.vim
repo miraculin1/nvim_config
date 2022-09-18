@@ -12,7 +12,6 @@ call plug#begin()
 
 " Make sure you use single quotes
 
-Plug 'godlygeek/tabular'
 Plug 'preservim/vim-markdown'
 
 Plug 'morhetz/gruvbox'
@@ -26,19 +25,21 @@ Plug 'jiangmiao/auto-pairs'
 
 Plug 'Yggdroot/indentLine'
 
+Plug 'voldikss/vim-floaterm'
 
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+
 " Use release branch (recommend)
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 Plug 'airblade/vim-gitgutter'
 
-Plug 'sonph/onehalf', { 'rtp': 'vim' }
-
 Plug 'preservim/nerdcommenter'
 Plug 'machakann/vim-sandwich'
 
 Plug 'wellle/context.vim'
+
+Plug 'cdelledonne/vim-cmake'
 " Initialize plugin system
 call plug#end()
 
@@ -52,19 +53,15 @@ let mapleader = " "
 "upd the filetype when change the buffer
 autocmd BufEnter * filetype detect
 
-"for c
-autocmd FileType c nnoremap <leader>t :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
-autocmd FileType c nnoremap <leader>b :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
-
-"for cpp
-autocmd FileType cpp nnoremap <leader>t :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
-autocmd FileType cpp nnoremap <leader>b :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
-
 "for java
 """"""""""""""
 "since there is a bug causing jdt.ls lsp always asume the editing file is exist
 "on disk resart coc after save would bypass this
 autocmd BufNewFile *.java :w | CocRestart
+
+let g:cmake_link_compile_commands = 1
+nnoremap <leader>g :CMakeGenerate<CR>
+nnoremap <leader>b :CMakeBuild<CR>
 
 nnoremap <leader>m :AsyncRun make 
 nnoremap <leader>rr :AsyncRun build/
@@ -73,22 +70,18 @@ nnoremap <leader>m "+yy
 vnoremap <leader>m "+y
 
 
-""""""Abanden""""""
-":nmap <leader>r :AsyncRun clang $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
-":nmap <leader>b :AsyncRun clang $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address<CR>
-"works in nvim
-"
-"
-:nmap <leader>d :vs term://gdb ./build/%:t:r<CR>
-"
+:nnoremap <C-j> <C-w>j
+:nnoremap <C-h> <C-w>h
+:nnoremap <C-k> <C-w>k
+:nnoremap <C-l> <C-w>l
+" :nmap <leader>d :vs term://gdb ./build/%:t:r<CR>
+nnoremap <leader>n :FloatermNew<CR>
+
 :nnoremap <leader>p :MarkdownPreviewToggle<CR>
 
 :nnoremap <TAB>j :bn<CR>
 :nnoremap <TAB>k :bp<CR>
 :nnoremap <TAB>n :bw<CR>
-
-:nnoremap X <c-v>
-
 
 syntax on
 set showmode
@@ -160,13 +153,11 @@ let g:airline#extensions#tabline#enabled = 1
 let g:coc_global_extensions = [
     \ 'coc-json',
     \ 'coc-vimlsp',
-    \ 'coc-clangd',
     \ 'coc-html',
     \ 'coc-prettier',
     \ 'coc-snippets',
     \ 'coc-java',
     \ 'coc-cmake',]
-" 用 <C-j> 在 snippet 里选择下一个参数 <C-j> 上一个
 
 "转跳时可以不用保存，未保存文件留在 buffer 里
 set hidden
@@ -203,44 +194,26 @@ endif
   inoremap <silent><expr> <CR> coc#pum#visible() ? coc#_select_confirm()
         \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
-
-
-"lagecy settings for coc-completion
-""""""""""""""""""""""""""""""""
-" "make tab useful
-" inoremap <silent><expr> <TAB>
-      " \ pumvisible() ? "\<C-n>" :
-      " \ <SID>check_back_space() ? "\<TAB>" :
-      " \ coc#refresh()
-" inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-"
-" function! s:check_back_space() abort
-  " let col = col('.') - 1
-  " return !col || getline('.')[col - 1]  =~ '\s'
-" endfunction
-"
-" " Use <c-space> to trigger completion at any time.
-" if has('nvim')
-  " inoremap <silent><expr> <c-space> coc#refresh()
-" else
-  " inoremap <silent><expr> <c-@> coc#refresh()
-" endif
-"
-"
-" " Make <CR> auto-select the first completion item and notify coc.nvim to
-" " format on enter, <cr> could be remapped by other vim plugin
-" inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-                              " \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
+" Map function and class text objects
+" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
+xmap if <Plug>(coc-funcobj-i)
+omap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap af <Plug>(coc-funcobj-a)
+xmap ic <Plug>(coc-classobj-i)
+omap ic <Plug>(coc-classobj-i)
+xmap ac <Plug>(coc-classobj-a)
+omap ac <Plug>(coc-classobj-a)
+
 
 " Use h to show documentation in preview window.
-nnoremap <leader>h :call <SID>show_documentation()<CR>
+nnoremap <silent>K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
@@ -322,3 +295,7 @@ let g:vim_markdown_conceal_code_blocks = 0
 "GitGutter
 """"""""""""""""
 let g:gitgutter_enabled = 0
+
+"Floaterm
+""""""""""""""""""""
+let g:floaterm_position = 'bottomright'

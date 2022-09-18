@@ -10,3 +10,10 @@ coc 需要安装 nodejs
 
 markdownPreview 下载之后需要在 vim 中
 `:call mkdp#util#install()`
+
+在最新的版本中，从 `clangd` 切换到 `ccls`。
+所以要安装 `ccls`
+
+## 使用要求
+
+默认使用 cmake 进行编译 C 语言
