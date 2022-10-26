@@ -27,7 +27,10 @@ Plug 'Yggdroot/indentLine'
 
 Plug 'voldikss/vim-floaterm'
 
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+" " If you have nodejs and yarn
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+
+" Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 " Use release branch (recommend)
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -53,6 +56,17 @@ let mapleader = " "
 "upd the filetype when change the buffer
 autocmd BufEnter * filetype detect
 
+"for c
+autocmd FileType c nnoremap <leader>t :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
+autocmd FileType c nnoremap <leader>b :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
+
+"for cpp
+autocmd FileType cpp nnoremap <leader>t :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
+autocmd FileType cpp nnoremap <leader>b :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
+
+"for java
+""""""""""""""
+
 "for java
 """"""""""""""
 "since there is a bug causing jdt.ls lsp always asume the editing file is exist
@@ -60,10 +74,9 @@ autocmd BufEnter * filetype detect
 autocmd BufNewFile *.java :w | CocRestart
 
 let g:cmake_link_compile_commands = 1
-nnoremap <leader>g :CMakeGenerate<CR>
-nnoremap <leader>b :CMakeBuild<CR>
+nnoremap <leader>cg :CMakeGenerate<CR>
+nnoremap <leader>cb :CMakeBuild<CR>
 
-nnoremap <leader>m :AsyncRun make 
 nnoremap <leader>rr :AsyncRun build/
 nnoremap <leader>o :copen<CR>
 nnoremap <leader>m "+yy
@@ -95,6 +108,7 @@ set shiftwidth=2
 set expandtab
 set softtabstop=2
 set ignorecase
+set mouse=
 
 "scheme settings
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -154,6 +168,7 @@ let g:coc_global_extensions = [
     \ 'coc-json',
     \ 'coc-vimlsp',
     \ 'coc-html',
+    \ 'coc-clangd',
     \ 'coc-prettier',
     \ 'coc-snippets',
     \ 'coc-java',
