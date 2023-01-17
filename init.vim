@@ -64,15 +64,6 @@ autocmd FileType c nnoremap <leader>b :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o 
 autocmd FileType cpp nnoremap <leader>t :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
 autocmd FileType cpp nnoremap <leader>b :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
 
-"for java
-""""""""""""""
-
-"for java
-""""""""""""""
-"since there is a bug causing jdt.ls lsp always asume the editing file is exist
-"on disk resart coc after save would bypass this
-autocmd BufNewFile *.java :w | CocRestart
-
 let g:cmake_link_compile_commands = 1
 nnoremap <leader>cg :CMakeGenerate<CR>
 nnoremap <leader>cb :CMakeBuild<CR>
@@ -87,6 +78,10 @@ vnoremap <leader>m "+y
 :nnoremap <C-h> <C-w>h
 :nnoremap <C-k> <C-w>k
 :nnoremap <C-l> <C-w>l
+:nnoremap <leader><C-j> <C-w>J
+:nnoremap <leader><C-h> <C-w>H
+:nnoremap <leader><C-k> <C-w>K
+:nnoremap <leader><C-l> <C-w>L
 " :nmap <leader>d :vs term://gdb ./build/%:t:r<CR>
 nnoremap <leader>n :FloatermNew<CR>
 
@@ -136,9 +131,10 @@ colorscheme gruvbox
 set cursorline
 set background=dark
 set number
+set signcolumn=yes:1
 set relativenumber
 set textwidth=80
-set wrap
+set nowrap
 set scrolloff=5
 set laststatus=2
 set ruler
@@ -153,6 +149,9 @@ set listchars=tab:»■,trail:■
 set list
 set wildmenu
 set wildmode=longest:list,full
+" check modeline in 2 lines at both begin and end
+" default 5, interufere with STM32CubeMX code
+set modelines=3
 
 
 
@@ -171,8 +170,7 @@ let g:coc_global_extensions = [
     \ 'coc-clangd',
     \ 'coc-prettier',
     \ 'coc-snippets',
-    \ 'coc-java',
-    \ 'coc-cmake',]
+    \ 'coc-cmake']
 
 "转跳时可以不用保存，未保存文件留在 buffer 里
 set hidden
@@ -206,7 +204,7 @@ endif
 "To make <CR> to confirm selection of selected complete item or notify coc.nvim
 "to format on enter, use: >
 
-  inoremap <silent><expr> <CR> coc#pum#visible() ? coc#_select_confirm()
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#_select_confirm()
         \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " GoTo code navigation.
@@ -253,9 +251,9 @@ nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
 
 "coc.prettier
-command! -nargs=0 Prettier :CocCommand prettier.formatFile
+command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
 
-vmap <leader>f  <Plug>(coc-format-select)
+vmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format)
 
 "nerdcommenter
@@ -309,7 +307,7 @@ let g:vim_markdown_conceal_code_blocks = 0
 
 "GitGutter
 """"""""""""""""
-let g:gitgutter_enabled = 0
+let g:gitgutter_enabled = 1
 
 "Floaterm
 """"""""""""""""""""
