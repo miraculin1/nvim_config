@@ -9,13 +9,7 @@
 coc 需要安装 nodejs
 markdown 需要 yarn
 
-~~markdownPreview 下载之后需要在 vim 中
-`:call mkdp#util#install()`~~
-
 在安装之后可能会报有关 `pyx` 的错，从 `checkhealth` 可以看到解决方案。
 
-
-## 使用要求
-
-支持 CMake 相关便利使用
-随便用
+使用 treesitter 高亮`c/cpp` `lua` `vim`代码。几乎不需要额外配置，
+关于此插件的使用还在考虑，主要是这个完全为处于美化方面的考虑。
