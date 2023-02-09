@@ -12,6 +12,8 @@ call plug#begin()
 
 " Make sure you use single quotes
 
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/nvim-treesitter-context'
@@ -117,6 +119,8 @@ set expandtab
 set softtabstop=2
 set ignorecase
 set mouse=
+" 80 char
+set colorcolumn=80
 
 "scheme settings
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -147,7 +151,7 @@ set number
 set signcolumn=yes:1
 set relativenumber
 set textwidth=80
-set nowrap
+set wrap
 set scrolloff=5
 set laststatus=2
 set ruler
@@ -179,10 +183,8 @@ let g:airline#extensions#tabline#enabled = 1
 let g:coc_global_extensions = [
     \ 'coc-json',
     \ 'coc-vimlsp',
-    \ 'coc-html',
     \ 'coc-clangd',
     \ 'coc-prettier',
-    \ 'coc-snippets',
     \ 'coc-cmake']
 
 "转跳时可以不用保存，未保存文件留在 buffer 里
@@ -309,7 +311,13 @@ let g:gitgutter_enabled = 1
 
 "Floaterm
 """"""""""""""""""""
-let g:floaterm_position = 'bottomright'
+let g:floaterm_position = 'bottom'
+let g:floaterm_width = 0.9
+
+"FZF
+""""""""""""""""""""
+nnoremap <leader>e :Files<CR>
+
 
 "Treesitter
 """"""""""""""""""""
@@ -323,7 +331,7 @@ require'nvim-treesitter.configs'.setup {
 
   -- Automatically install missing parsers when entering buffer
   -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
-  auto_install = true,
+  auto_install = false,
 
   -- List of parsers to ignore installing (for "all")
   ignore_install = { "javascript" },
