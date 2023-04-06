@@ -1,5 +1,7 @@
 {
   "inlayHint.enable": false,
   "suggest.noselect": false,
-  "clangd.arguments": ["--header-insertion=never"]
+  "clangd.arguments": [
+    "--header-insertion=never",
+  ],
 }
