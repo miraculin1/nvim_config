@@ -12,8 +12,14 @@ call plug#begin()
 
 " Make sure you use single quotes
 
+" past img in .md
+
+Plug 'ekickx/clipboard-image.nvim'
+
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+
+
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/nvim-treesitter-context'
@@ -25,9 +31,8 @@ Plug 'skywind3000/asyncrun.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-Plug 'jiangmiao/auto-pairs'
-
-Plug 'lukas-reineke/indent-blankline.nvim'
+" Plug 'jiangmiao/auto-pairs'
+Plug 'windwp/nvim-autopairs'
 
 Plug 'voldikss/vim-floaterm'
 
@@ -38,9 +43,12 @@ Plug 'williamboman/mason.nvim', { 'do': ':MasonUpdate' }
 Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'neovim/nvim-lspconfig'
 
-" linter
+" dependency
 Plug 'nvim-lua/plenary.nvim'
+" linter
 Plug 'jose-elias-alvarez/null-ls.nvim'
+
+Plug 'folke/todo-comments.nvim'
 
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
@@ -49,18 +57,31 @@ Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/vim-vsnip'
 
+" Plug 'lukas-reineke/indent-blankline.nvim'
+" new indent
+Plug 'shellRaining/hlchunk.nvim'
+
+Plug 'RRethy/vim-illuminate'
+
+" replace
+Plug 'brooth/far.vim'
+
+Plug 'folke/flash.nvim'
 
 " Use release branch (recommend)
 " Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
+" git things
 Plug 'airblade/vim-gitgutter'
+Plug 'sindrets/diffview.nvim'
 
 Plug 'preservim/nerdcommenter'
 Plug 'machakann/vim-sandwich'
 
 Plug 'cdelledonne/vim-cmake'
 
-Plug 'ARM9/arm-syntax-vim'
+"rename box
+Plug 'stevearc/dressing.nvim'
 " Initialize plugin system
 call plug#end()
 
@@ -97,10 +118,10 @@ vnoremap <leader>m "+y
 :nnoremap <A-h> <C-w>h
 :nnoremap <A-k> <C-w>k
 :nnoremap <A-l> <C-w>l
-:nnoremap <leader><C-j> <C-w>J
-:nnoremap <leader><C-h> <C-w>H
-:nnoremap <leader><C-k> <C-w>K
-:nnoremap <leader><C-l> <C-w>L
+:nnoremap <leader><A-j> <C-w>J
+:nnoremap <leader><A-h> <C-w>H
+:nnoremap <leader><A-k> <C-w>K
+:nnoremap <leader><A-l> <C-w>L
 " :nmap <leader>d :vs term://gdb ./build/%:t:r<CR>
 nnoremap <leader>n :FloatermNew<CR>
 
@@ -155,7 +176,7 @@ set background=dark
 set number
 set signcolumn=yes:1
 set relativenumber
-set textwidth=80
+" set textwidth=80
 set wrap
 set scrolloff=5
 set laststatus=2
@@ -179,6 +200,12 @@ set updatetime=100
 set modelines=3
 
 
+" fzf settings
+""""""""""""""""""""""""""""""
+nnoremap <leader>ff :Files<CR>
+nnoremap <leader>fb :Buffer<CR>
+nnoremap <leader>fl :Lines<CR>
+nnoremap <leader>fj :Jumps<CR?
 
 "Airline settings
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -213,10 +240,6 @@ let g:NERDTrimTrailingWhitespace = 1
 " Enable NERDCommenterToggle to check all selected lines is commented or not 
 let g:NERDToggleCheckAllLines = 1
 
-"sticky scroll
-""""""""""""""""""""
-let g:context_enabled = 1
-let g:context_max_height = 10
 
 "GitGutter
 """"""""""""""""
@@ -227,12 +250,30 @@ let g:gitgutter_enabled = 1
 let g:floaterm_position = 'bottom'
 let g:floaterm_width = 0.9
 
-"FZF
+" far
 """"""""""""""""""""
-nnoremap <leader>e :Files<CR>
+let g:far#enable_undo = 1
+
+"treesitter
+""""""""""""""""""
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
+set nofoldenable
+autocmd BufReadPost,FileReadPost * normal zR
+
 
 
 :lua << EOF
+-- flash(for fast jump)
+--------------------------
+vim.keymap.set('n', '<esc>', function() require("flash").jump() end)
+
+-- todo comment
+require("todo-comments").setup()
+
+-- auto pair
+---------------------------
+require("nvim-autopairs").setup {}
 
 -- mason
 ------------------------
@@ -248,6 +289,14 @@ require("mason-lspconfig").setup_handlers {
     end,
     -- Next, you can provide a dedicated handler for specific servers.
     -- For example, a handler override for the `rust_analyzer`:
+    ["clangd"] = function ()
+    require('lspconfig').clangd.setup{
+    cmd = {
+      "clangd",
+      "-header-insertion=never",
+      }
+    }
+    end,
 }
 
 local null_ls = require("null-ls")
@@ -256,6 +305,14 @@ null_ls.setup({
     sources = {
     },
 })
+
+-- Insert `(` after select function or method item
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+local cmp = require('cmp')
+cmp.event:on(
+  'confirm_done',
+  cmp_autopairs.on_confirm_done()
+)
 
 -- cmp
 ---------------------------------
@@ -325,6 +382,7 @@ local cmp = require'cmp'
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
       { name = 'vsnip' }, -- For vsnip users.
+      { name = 'path'},
       -- { name = 'luasnip' }, -- For luasnip users.
       -- { name = 'ultisnips' }, -- For ultisnips users.
       -- { name = 'snippy' }, -- For snippy users.
@@ -402,7 +460,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 -- """"""""""""""""""""
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all" (the four listed parsers should always be installed)
-  ensure_installed = { "c", "lua", "vim", "help", "cpp" },
+  ensure_installed = { "c", "lua", "vim", "cpp" },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
@@ -427,13 +485,13 @@ require'nvim-treesitter.configs'.setup {
     -- list of language that will be disabled
     disable = {},
     -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
-    disable = function(lang, buf)
-        local max_filesize = 100 * 1024 -- 100 KB
-        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-        if ok and stats and stats.size > max_filesize then
-            return true
-        end
-    end,
+    -- disable = function(lang, buf)
+    --     local max_filesize = 100 * 1024 -- 100 KB
+    --     local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+    --     if ok and stats and stats.size > max_filesize then
+    --         return true
+    --     end
+    -- end,
 
     -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
@@ -442,6 +500,87 @@ require'nvim-treesitter.configs'.setup {
     additional_vim_regex_highlighting = false,
   },
 }
+
+require'treesitter-context'.setup{
+  enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+  max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+  min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+  line_numbers = true,
+  multiline_threshold = 20, -- Maximum number of lines to collapse for a single context line
+  trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+  mode = 'cursor',  -- Line used to calculate context. Choices: 'cursor', 'topline'
+  -- Separator between context and content. Should be a single character string, like '-'.
+  -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+  separator = nil,
+  zindex = 20, -- The Z-index of the context window
+  on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
+}
+
+-- things about indent
+------------------------
+require('hlchunk').setup({
+    indent = {
+        chars = { "│", }, -- 更多的字符可以在 https://unicodeplus.com/ 这个网站上找到
+
+
+        style = {
+            "#81776e",
+        },
+    },
+    blank = {
+        enable = false,
+    }
+})
+
+-- vim-illuminate
+----------------------
+-- default configuration
+require('illuminate').configure({
+    -- providers: provider used to get references in the buffer, ordered by priority
+    providers = {
+        'lsp',
+        'treesitter',
+        'regex',
+    },
+    -- delay: delay in milliseconds
+    delay = 100,
+    -- filetype_overrides: filetype specific overrides.
+    -- The keys are strings to represent the filetype while the values are tables that
+    -- supports the same keys passed to .configure except for filetypes_denylist and filetypes_allowlist
+    filetype_overrides = {},
+    -- filetypes_denylist: filetypes to not illuminate, this overrides filetypes_allowlist
+    filetypes_denylist = {
+        'dirvish',
+        'fugitive',
+    },
+    -- filetypes_allowlist: filetypes to illuminate, this is overriden by filetypes_denylist
+    filetypes_allowlist = {},
+    -- modes_denylist: modes to not illuminate, this overrides modes_allowlist
+    -- See `:help mode()` for possible values
+    modes_denylist = {},
+    -- modes_allowlist: modes to illuminate, this is overriden by modes_denylist
+    -- See `:help mode()` for possible values
+    modes_allowlist = {},
+    -- providers_regex_syntax_denylist: syntax to not illuminate, this overrides providers_regex_syntax_allowlist
+    -- Only applies to the 'regex' provider
+    -- Use :echom synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
+    providers_regex_syntax_denylist = {},
+    -- providers_regex_syntax_allowlist: syntax to illuminate, this is overriden by providers_regex_syntax_denylist
+    -- Only applies to the 'regex' provider
+    -- Use :echom synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
+    providers_regex_syntax_allowlist = {},
+    -- under_cursor: whether or not to illuminate under the cursor
+    under_cursor = true,
+    -- large_file_cutoff: number of lines at which to use large_file_config
+    -- The `under_cursor` option is disabled when this cutoff is hit
+    large_file_cutoff = nil,
+    -- large_file_config: config to use for large files (based on large_file_cutoff).
+    -- Supports the same keys passed to .configure
+    -- If nil, vim-illuminate will be disabled for large files.
+    large_file_overrides = nil,
+    -- min_count_to_highlight: minimum number of matches required to perform highlighting
+    min_count_to_highlight = 1,
+})
 
 EOF
 
