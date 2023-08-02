@@ -30,11 +30,10 @@ Plug 'skywind3000/asyncrun.vim'
 
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'tpope/vim-fugitive'
 
 " Plug 'jiangmiao/auto-pairs'
 Plug 'windwp/nvim-autopairs'
-
-Plug 'voldikss/vim-floaterm'
 
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown' }
 
@@ -64,24 +63,30 @@ Plug 'shellRaining/hlchunk.nvim'
 Plug 'RRethy/vim-illuminate'
 
 " replace
-Plug 'brooth/far.vim'
+Plug 'nvim-pack/nvim-spectre'
 
 Plug 'folke/flash.nvim'
+
+" for icons
+Plug 'nvim-tree/nvim-web-devicons'
 
 " Use release branch (recommend)
 " Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " git things
-Plug 'airblade/vim-gitgutter'
+" Plug 'airblade/vim-gitgutter'
+Plug 'lewis6991/gitsigns.nvim'
 Plug 'sindrets/diffview.nvim'
 
 Plug 'preservim/nerdcommenter'
 Plug 'machakann/vim-sandwich'
 
-Plug 'cdelledonne/vim-cmake'
-
 "rename box
 Plug 'stevearc/dressing.nvim'
+
+" auto resize the focused window
+Plug 'nvim-focus/focus.nvim'
+
 " Initialize plugin system
 call plug#end()
 
@@ -110,8 +115,6 @@ nnoremap <leader>cb :CMakeBuild<CR>
 
 nnoremap <leader>rr :AsyncRun build/
 nnoremap <leader>o :copen<CR>
-nnoremap <leader>m "+yy
-vnoremap <leader>m "+y
 
 
 :nnoremap <A-j> <C-w>j
@@ -147,6 +150,7 @@ set ignorecase
 set mouse=
 " 80 char
 set colorcolumn=80
+set clipboard=unnamedplus
 
 "scheme settings
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -207,9 +211,17 @@ nnoremap <leader>fb :Buffer<CR>
 nnoremap <leader>fl :Lines<CR>
 nnoremap <leader>fj :Jumps<CR?
 
+" spectre 
+""""""""""""""""""""""""""""
+nnoremap <leader>fr :Spectre<CR>
+
+
 "Airline settings
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#branch#enabled = 1
+let g:airline_powerline_fonts = 1
+
 
 "nerdcommenter
 """"""""""""""""""""""""""""""""""""""
@@ -241,9 +253,9 @@ let g:NERDTrimTrailingWhitespace = 1
 let g:NERDToggleCheckAllLines = 1
 
 
-"GitGutter
-""""""""""""""""
-let g:gitgutter_enabled = 1
+" "GitGutter
+" """"""""""""""""
+" let g:gitgutter_enabled = 1
 
 "Floaterm
 """"""""""""""""""""
@@ -264,6 +276,9 @@ autocmd BufReadPost,FileReadPost * normal zR
 
 
 :lua << EOF
+--focus auto resize on focus
+require("focus").setup()
+
 -- flash(for fast jump)
 --------------------------
 vim.keymap.set('n', '<esc>', function() require("flash").jump() end)
@@ -274,6 +289,9 @@ require("todo-comments").setup()
 -- auto pair
 ---------------------------
 require("nvim-autopairs").setup {}
+
+-- gitsigns
+require('gitsigns').setup()
 
 -- mason
 ------------------------
@@ -450,7 +468,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
     vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
     vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('n', '<space>f', function()
+    vim.keymap.set('n', '<space>fm', function()
       vim.lsp.buf.format { async = true }
     end, opts)
   end,
