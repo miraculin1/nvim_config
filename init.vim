@@ -19,6 +19,7 @@ Plug 'ekickx/clipboard-image.nvim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
+Plug 'Civitasv/cmake-tools.nvim'
 
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -97,24 +98,20 @@ call plug#end()
 let mapleader = " "
 
 
-"""""""C & R"""""""
-"upd the filetype when change the buffer
-autocmd BufEnter * filetype detect
-
-"for c
-autocmd FileType c nnoremap <leader>t :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
-autocmd FileType c nnoremap <leader>b :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
-
-"for cpp
-autocmd FileType cpp nnoremap <leader>t :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
-autocmd FileType cpp nnoremap <leader>b :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
-
-let g:cmake_link_compile_commands = 1
-nnoremap <leader>cg :CMakeGenerate<CR>
-nnoremap <leader>cb :CMakeBuild<CR>
-
-nnoremap <leader>rr :AsyncRun build/
-nnoremap <leader>o :copen<CR>
+" """""""C & R"""""""
+" "upd the filetype when change the buffer
+" autocmd BufEnter * filetype detect
+"
+" "for c
+" autocmd FileType c nnoremap <leader>t :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
+" autocmd FileType c nnoremap <leader>b :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
+"
+" "for cpp
+" autocmd FileType cpp nnoremap <leader>t :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
+" autocmd FileType cpp nnoremap <leader>b :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
+"
+" nnoremap <leader>rr :AsyncRun build/
+" nnoremap <leader>o :copen<CR>
 
 
 :nnoremap <A-j> <C-w>j
@@ -155,21 +152,7 @@ set clipboard=unnamedplus
 "scheme settings
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:gruvbox_italic=1
-"Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
-"If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
-"(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
-if (empty($TMUX))
-  if (has("nvim"))
-    " "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
-    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-  endif
-  " "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
-  " "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
-  " " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
-  if (has("termguicolors"))
-    set termguicolors
-  endif
-endif
+set termguicolors
 colorscheme gruvbox
 "scheme settings end
 
@@ -281,7 +264,7 @@ require("focus").setup()
 
 -- flash(for fast jump)
 --------------------------
-vim.keymap.set('n', '<esc>', function() require("flash").jump() end)
+vim.keymap.set('n', '\'', function() require("flash").jump() end)
 
 -- todo comment
 require("todo-comments").setup()
@@ -312,6 +295,7 @@ require("mason-lspconfig").setup_handlers {
     cmd = {
       "clangd",
       "-header-insertion=never",
+      "--query-driver=/usr/bin/gcc,/usr/bin/g++,/usr/bin/arm-none-eabi-gcc,/usr/bin/arm-none-eabi-g++",
       }
     }
     end,
@@ -599,6 +583,74 @@ require('illuminate').configure({
     -- min_count_to_highlight: minimum number of matches required to perform highlighting
     min_count_to_highlight = 1,
 })
+
+require("cmake-tools").setup {
+  cmake_command = "cmake", -- this is used to specify cmake command path
+  cmake_regenerate_on_save = true, -- auto generate when save CMakeLists.txt
+  cmake_generate_options = { "-DCMAKE_EXPORT_COMPILE_COMMANDS=1" }, -- this will be passed when invoke `CMakeGenerate`
+  cmake_build_options = {}, -- this will be passed when invoke `CMakeBuild`
+  -- support macro expansion:
+  --       ${kit}
+  --       ${kitGenerator}
+  --       ${variant:xx}
+  cmake_build_directory = "build/${variant:buildType}", -- this is used to specify generate directory for cmake, allows macro expansion
+  cmake_soft_link_compile_commands = true, -- this will automatically make a soft link from compile commands file to project root dir
+  cmake_compile_commands_from_lsp = false, -- this will automatically set compile commands file location using lsp, to use it, please set `cmake_soft_link_compile_commands` to false
+  cmake_kits_path = nil, -- this is used to specify global cmake kits path, see CMakeKits for detailed usage
+  cmake_variants_message = {
+    short = { show = true }, -- whether to show short message
+    long = { show = true, max_length = 40 }, -- whether to show long message
+  },
+  cmake_dap_configuration = { -- debug settings for cmake
+    name = "cpp",
+    type = "codelldb",
+    request = "launch",
+    stopOnEntry = false,
+    runInTerminal = true,
+    console = "integratedTerminal",
+  },
+  cmake_executor = { -- executor to use
+    name = "quickfix", -- name of the executor
+    opts = {}, -- the options the executor will get, possible values depend on the executor type. See `default_opts` for possible values.
+    default_opts = { -- a list of default and possible values for executors
+      quickfix = {
+        show = "always", -- "always", "only_on_error"
+        position = "belowright", -- "bottom", "top"
+        size = 10,
+      },
+      overseer = {
+        new_task_opts = {}, -- options to pass into the `overseer.new_task` command
+        on_new_task = function(task) end, -- a function that gets overseer.Task when it is created, before calling `task:start`
+      },
+      terminal = {}, -- terminal executor uses the values in cmake_terminal
+    },
+  },
+  cmake_terminal = {
+    name = "terminal",
+    opts = {
+      name = "Main Terminal",
+      prefix_name = "[CMakeTools]: ", -- This must be included and must be unique, otherwise the terminals will not work. Do not use a simple spacebar " ", or any generic name
+      split_direction = "horizontal", -- "horizontal", "vertical"
+      split_size = 6,
+
+      -- Window handling
+      single_terminal_per_instance = true, -- Single viewport, multiple windows
+      single_terminal_per_tab = true, -- Single viewport per tab
+      keep_terminal_static_location = true, -- Static location of the viewport if avialable
+
+      -- Running Tasks
+      start_insert_in_launch_task = false, -- If you want to enter terminal with :startinsert upon using :CMakeRun
+      start_insert_in_other_tasks = false, -- If you want to enter terminal with :startinsert upon launching all other cmake tasks in the terminal. Generally set as false
+      focus_on_main_terminal = false, -- Focus on cmake terminal when cmake task is launched. Only used if executor is terminal.
+      focus_on_launch_terminal = false, -- Focus on cmake launch terminal when executable target in launched.
+    },
+  },
+  cmake_notifications = {
+    enabled = true, -- show cmake execution progress in nvim-notify
+    spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }, -- icons used for progress display
+    refresh_rate_ms = 100, -- how often to iterate icons
+  },
+}
 
 EOF
 
