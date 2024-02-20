@@ -16,9 +16,6 @@ call plug#begin()
 
 Plug 'ekickx/clipboard-image.nvim'
 
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-
 Plug 'Civitasv/cmake-tools.nvim'
 
 
@@ -45,6 +42,9 @@ Plug 'neovim/nvim-lspconfig'
 
 " dependency
 Plug 'nvim-lua/plenary.nvim'
+
+Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }
+
 " linter
 Plug 'jose-elias-alvarez/null-ls.nvim'
 
@@ -55,7 +55,12 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
+
+"" snippet plugins
+Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
+Plug 'hrsh7th/vim-vsnip-integ'
+Plug 'rafamadriz/friendly-snippets'
 
 " Plug 'lukas-reineke/indent-blankline.nvim'
 " new indent
@@ -85,8 +90,6 @@ Plug 'machakann/vim-sandwich'
 "rename box
 Plug 'stevearc/dressing.nvim'
 
-" auto resize the focused window
-Plug 'nvim-focus/focus.nvim'
 
 " Initialize plugin system
 call plug#end()
@@ -131,6 +134,37 @@ nnoremap <leader>n :FloatermNew<CR>
 :nnoremap <TAB>k :bp<CR>
 :nnoremap <TAB>n :bw<CR>
 :nnoremap <S-M> :Man<CR>
+
+" NOTE: You can use other key to expand snippet.
+
+" " Expand
+" imap <expr> <C-l>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+" smap <expr> <C-l>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+
+" Expand or jump
+imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+
+" Jump forward or backward
+imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+
+" Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
+" See https://github.com/hrsh7th/vim-vsnip/pull/50
+nmap        s   <Plug>(vsnip-select-text)
+xmap        s   <Plug>(vsnip-select-text)
+nmap        S   <Plug>(vsnip-cut-text)
+xmap        S   <Plug>(vsnip-cut-text)
+
+" If you want to use snippet for multiple filetypes, you can `g:vsnip_filetypes` for it.
+let g:vsnip_filetypes = {}
+let g:vsnip_filetypes.markdown = ['tex']
+let g:vsnip_filetypes.javascriptreact = ['javascript']
+let g:vsnip_filetypes.typescriptreact = ['typescript']
+
+
 
 syntax on
 set showmode
@@ -187,12 +221,23 @@ set updatetime=100
 set modelines=3
 
 
-" fzf settings
-""""""""""""""""""""""""""""""
-nnoremap <leader>ff :Files<CR>
-nnoremap <leader>fb :Buffer<CR>
-nnoremap <leader>fl :Lines<CR>
-nnoremap <leader>fj :Jumps<CR?
+" " fzf settings
+" """"""""""""""""""""""""""""""
+" nnoremap <leader>ff :Files<CR>
+" nnoremap <leader>fb :Buffer<CR>
+" nnoremap <leader>fl :Lines<CR>
+" nnoremap <leader>fj :Jumps<CR?
+" Find files using Telescope command-line sugar.
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+
+" " Using Lua functions
+" nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
+" nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
+" nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
+" nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
 
 " spectre 
 """"""""""""""""""""""""""""
@@ -259,9 +304,6 @@ autocmd BufReadPost,FileReadPost * normal zR
 
 
 :lua << EOF
---focus auto resize on focus
-require("focus").setup()
-
 -- flash(for fast jump)
 --------------------------
 vim.keymap.set('n', '\'', function() require("flash").jump() end)
@@ -333,26 +375,12 @@ local cmp = require'cmp'
 
   cmp.setup({
     snippet = {
-      -- We recommend using *actual* snippet engine.
-      -- It's a simple implementation so it might not work in some of the cases.
+    -- REQUIRED - you must specify a snippet engine
       expand = function(args)
-        unpack = unpack or table.unpack
-        local line_num, col = unpack(vim.api.nvim_win_get_cursor(0))
-        local line_text = vim.api.nvim_buf_get_lines(0, line_num - 1, line_num, true)[1]
-        local indent = string.match(line_text, '^%s*')
-        local replace = vim.split(args.body, '\n', true)
-        local surround = string.match(line_text, '%S.*') or ''
-        local surround_end = surround:sub(col)
-
-        replace[1] = surround:sub(0, col - 1)..replace[1]
-        replace[#replace] = replace[#replace]..(#surround_end > 1 and ' ' or '')..surround_end
-        if indent ~= '' then
-          for i, line in ipairs(replace) do
-            replace[i] = indent..line
-          end
-        end
-
-        vim.api.nvim_buf_set_lines(0, line_num - 1, line_num, true, replace)
+        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
       end,
     },
     mapping = cmp.mapping.preset.insert({
@@ -396,7 +424,7 @@ local cmp = require'cmp'
   -- Set configuration for specific filetype.
   cmp.setup.filetype('gitcommit', {
     sources = cmp.config.sources({
-      { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
+      -- { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
     }, {
       { name = 'buffer' },
     })
@@ -586,6 +614,7 @@ require('illuminate').configure({
 
 require("cmake-tools").setup {
   cmake_command = "cmake", -- this is used to specify cmake command path
+  ctest_command = "ctest", -- this is used to specify ctest command path
   cmake_regenerate_on_save = true, -- auto generate when save CMakeLists.txt
   cmake_generate_options = { "-DCMAKE_EXPORT_COMPILE_COMMANDS=1" }, -- this will be passed when invoke `CMakeGenerate`
   cmake_build_options = {}, -- this will be passed when invoke `CMakeBuild`
@@ -593,7 +622,7 @@ require("cmake-tools").setup {
   --       ${kit}
   --       ${kitGenerator}
   --       ${variant:xx}
-  cmake_build_directory = "build/${variant:buildType}", -- this is used to specify generate directory for cmake, allows macro expansion
+  cmake_build_directory = "out/${variant:buildType}", -- this is used to specify generate directory for cmake, allows macro expansion, relative to vim.loop.cwd()
   cmake_soft_link_compile_commands = true, -- this will automatically make a soft link from compile commands file to project root dir
   cmake_compile_commands_from_lsp = false, -- this will automatically set compile commands file location using lsp, to use it, please set `cmake_soft_link_compile_commands` to false
   cmake_kits_path = nil, -- this is used to specify global cmake kits path, see CMakeKits for detailed usage
@@ -615,43 +644,102 @@ require("cmake-tools").setup {
     default_opts = { -- a list of default and possible values for executors
       quickfix = {
         show = "always", -- "always", "only_on_error"
-        position = "belowright", -- "bottom", "top"
+        position = "belowright", -- "vertical", "horizontal", "leftabove", "aboveleft", "rightbelow", "belowright", "topleft", "botright", use `:h vertical` for example to see help on them
         size = 10,
+        encoding = "utf-8", -- if encoding is not "utf-8", it will be converted to "utf-8" using `vim.fn.iconv`
+        auto_close_when_success = true, -- typically, you can use it with the "always" option; it will auto-close the quickfix buffer if the execution is successful.
+      },
+      toggleterm = {
+        direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
+        close_on_exit = false, -- whether close the terminal when exit
+        auto_scroll = true, -- whether auto scroll to the bottom
       },
       overseer = {
-        new_task_opts = {}, -- options to pass into the `overseer.new_task` command
-        on_new_task = function(task) end, -- a function that gets overseer.Task when it is created, before calling `task:start`
+        new_task_opts = {
+            strategy = {
+                "toggleterm",
+                direction = "horizontal",
+                autos_croll = true,
+                quit_on_exit = "success"
+            }
+        }, -- options to pass into the `overseer.new_task` command
+        on_new_task = function(task)
+            require("overseer").open(
+                { enter = false, direction = "right" }
+            )
+        end,   -- a function that gets overseer.Task when it is created, before calling `task:start`
       },
-      terminal = {}, -- terminal executor uses the values in cmake_terminal
+      terminal = {
+        name = "Main Terminal",
+        prefix_name = "[CMakeTools]: ", -- This must be included and must be unique, otherwise the terminals will not work. Do not use a simple spacebar " ", or any generic name
+        split_direction = "horizontal", -- "horizontal", "vertical"
+        split_size = 11,
+
+        -- Window handling
+        single_terminal_per_instance = true, -- Single viewport, multiple windows
+        single_terminal_per_tab = true, -- Single viewport per tab
+        keep_terminal_static_location = true, -- Static location of the viewport if avialable
+
+        -- Running Tasks
+        start_insert = false, -- If you want to enter terminal with :startinsert upon using :CMakeRun
+        focus = false, -- Focus on terminal when cmake task is launched.
+        do_not_add_newline = false, -- Do not hit enter on the command inserted when using :CMakeRun, allowing a chance to review or modify the command before hitting enter.
+      }, -- terminal executor uses the values in cmake_terminal
     },
   },
-  cmake_terminal = {
-    name = "terminal",
-    opts = {
-      name = "Main Terminal",
-      prefix_name = "[CMakeTools]: ", -- This must be included and must be unique, otherwise the terminals will not work. Do not use a simple spacebar " ", or any generic name
-      split_direction = "horizontal", -- "horizontal", "vertical"
-      split_size = 6,
+  cmake_runner = { -- runner to use
+    name = "terminal", -- name of the runner
+    opts = {}, -- the options the runner will get, possible values depend on the runner type. See `default_opts` for possible values.
+    default_opts = { -- a list of default and possible values for runners
+      quickfix = {
+        show = "always", -- "always", "only_on_error"
+        position = "belowright", -- "bottom", "top"
+        size = 10,
+        encoding = "utf-8",
+        auto_close_when_success = true, -- typically, you can use it with the "always" option; it will auto-close the quickfix buffer if the execution is successful.
+      },
+      toggleterm = {
+        direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
+        close_on_exit = false, -- whether close the terminal when exit
+        auto_scroll = true, -- whether auto scroll to the bottom
+      },
+      overseer = {
+        new_task_opts = {
+            strategy = {
+                "toggleterm",
+                direction = "horizontal",
+                autos_croll = true,
+                quit_on_exit = "success"
+            }
+        }, -- options to pass into the `overseer.new_task` command
+        on_new_task = function(task)
+        end,   -- a function that gets overseer.Task when it is created, before calling `task:start`
+      },
+      terminal = {
+        name = "Main Terminal",
+        prefix_name = "[CMakeTools]: ", -- This must be included and must be unique, otherwise the terminals will not work. Do not use a simple spacebar " ", or any generic name
+        split_direction = "horizontal", -- "horizontal", "vertical"
+        split_size = 11,
 
-      -- Window handling
-      single_terminal_per_instance = true, -- Single viewport, multiple windows
-      single_terminal_per_tab = true, -- Single viewport per tab
-      keep_terminal_static_location = true, -- Static location of the viewport if avialable
+        -- Window handling
+        single_terminal_per_instance = true, -- Single viewport, multiple windows
+        single_terminal_per_tab = true, -- Single viewport per tab
+        keep_terminal_static_location = true, -- Static location of the viewport if avialable
 
-      -- Running Tasks
-      start_insert_in_launch_task = false, -- If you want to enter terminal with :startinsert upon using :CMakeRun
-      start_insert_in_other_tasks = false, -- If you want to enter terminal with :startinsert upon launching all other cmake tasks in the terminal. Generally set as false
-      focus_on_main_terminal = false, -- Focus on cmake terminal when cmake task is launched. Only used if executor is terminal.
-      focus_on_launch_terminal = false, -- Focus on cmake launch terminal when executable target in launched.
+        -- Running Tasks
+        start_insert = false, -- If you want to enter terminal with :startinsert upon using :CMakeRun
+        focus = false, -- Focus on terminal when cmake task is launched.
+        do_not_add_newline = false, -- Do not hit enter on the command inserted when using :CMakeRun, allowing a chance to review or modify the command before hitting enter.
+      },
     },
   },
   cmake_notifications = {
-    enabled = true, -- show cmake execution progress in nvim-notify
+    runner = { enabled = true },
+    executor = { enabled = true },
     spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }, -- icons used for progress display
     refresh_rate_ms = 100, -- how often to iterate icons
   },
 }
-
 EOF
 
 "coc
