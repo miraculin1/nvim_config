@@ -160,7 +160,7 @@ xmap        S   <Plug>(vsnip-cut-text)
 
 " If you want to use snippet for multiple filetypes, you can `g:vsnip_filetypes` for it.
 let g:vsnip_filetypes = {}
-let g:vsnip_filetypes.markdown = ['tex']
+let g:vsnip_filetypes.markdown = []
 let g:vsnip_filetypes.javascriptreact = ['javascript']
 let g:vsnip_filetypes.typescriptreact = ['typescript']
 
@@ -304,6 +304,13 @@ autocmd BufReadPost,FileReadPost * normal zR
 
 
 :lua << EOF
+
+-- filetype mapping for ROS launch files
+vim.filetype.add({
+  extension = {
+    launch = 'xml'}
+})
+
 -- flash(for fast jump)
 --------------------------
 vim.keymap.set('n', '\'', function() require("flash").jump() end)
