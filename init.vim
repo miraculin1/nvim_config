@@ -85,6 +85,7 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'sindrets/diffview.nvim'
 
 Plug 'preservim/nerdcommenter'
+Plug 'kkoomen/vim-doge'
 Plug 'machakann/vim-sandwich'
 
 "rename box
@@ -100,23 +101,6 @@ call plug#end()
 :nnoremap <SPACE> <Nop>
 let mapleader = " "
 
-
-" """""""C & R"""""""
-" "upd the filetype when change the buffer
-" autocmd BufEnter * filetype detect
-"
-" "for c
-" autocmd FileType c nnoremap <leader>t :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
-" autocmd FileType c nnoremap <leader>b :AsyncRun gcc -std=c17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
-"
-" "for cpp
-" autocmd FileType cpp nnoremap <leader>t :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall; $(VIM_FILEDIR)/build/$(VIM_FILENOEXT)<CR>
-" autocmd FileType cpp nnoremap <leader>b :AsyncRun g++ -std=c++17 $(VIM_FILENAME) -o $(VIM_FILEDIR)/build/$(VIM_FILENOEXT) -g -fsanitize=address -Wall<CR>
-"
-" nnoremap <leader>rr :AsyncRun build/
-" nnoremap <leader>o :copen<CR>
-
-
 :nnoremap <A-j> <C-w>j
 :nnoremap <A-h> <C-w>h
 :nnoremap <A-k> <C-w>k
@@ -125,8 +109,6 @@ let mapleader = " "
 :nnoremap <leader><A-h> <C-w>H
 :nnoremap <leader><A-k> <C-w>K
 :nnoremap <leader><A-l> <C-w>L
-" :nmap <leader>d :vs term://gdb ./build/%:t:r<CR>
-nnoremap <leader>n :FloatermNew<CR>
 
 :nnoremap <leader>p :MarkdownPreviewToggle<CR>
 
@@ -280,15 +262,24 @@ let g:NERDTrimTrailingWhitespace = 1
 " Enable NERDCommenterToggle to check all selected lines is commented or not 
 let g:NERDToggleCheckAllLines = 1
 
+"" doge - for document generate
+"""""""""""""""""""""""""
+" Generate comment for current line.
+nmap <silent> <Leader>o <Plug>(doge-generate)
+
+" Interactive mode comment todo-jumping.
+nmap <silent> <TAB> <Plug>(doge-comment-jump-forward)
+nmap <silent> <S-TAB> <Plug>(doge-comment-jump-backward)
+imap <silent> <TAB> <Plug>(doge-comment-jump-forward)
+imap <silent> <S-TAB> <Plug>(doge-comment-jump-backward)
+smap <silent> <TAB> <Plug>(doge-comment-jump-forward)
+smap <silent> <S-TAB> <Plug>(doge-comment-jump-backward)
+
+"
 
 " "GitGutter
 " """"""""""""""""
 " let g:gitgutter_enabled = 1
-
-"Floaterm
-""""""""""""""""""""
-let g:floaterm_position = 'bottom'
-let g:floaterm_width = 0.9
 
 " far
 """"""""""""""""""""
@@ -497,7 +488,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 -- """"""""""""""""""""
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all" (the four listed parsers should always be installed)
-  ensure_installed = { "c", "lua", "vim", "cpp" },
+  ensure_installed = { "c", "lua", "vim", "cpp", "cmake", "xml" },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
