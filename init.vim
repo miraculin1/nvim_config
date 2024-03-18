@@ -90,6 +90,9 @@ Plug 'machakann/vim-sandwich'
 "rename box
 Plug 'stevearc/dressing.nvim'
 
+" code outline
+Plug 'hedyhli/outline.nvim'
+
 
 " Initialize plugin system
 call plug#end()
@@ -472,6 +475,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end, opts)
   end,
 })
+
+-- ouline
+-------------
+require("outline").setup({})
 
 -- Treesitter
 -- """"""""""""""""""""
