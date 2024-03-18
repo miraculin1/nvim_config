@@ -76,8 +76,6 @@ Plug 'folke/flash.nvim'
 " for icons
 Plug 'nvim-tree/nvim-web-devicons'
 
-" Use release branch (recommend)
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " git things
 " Plug 'airblade/vim-gitgutter'
@@ -85,7 +83,8 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'sindrets/diffview.nvim'
 
 Plug 'preservim/nerdcommenter'
-Plug 'kkoomen/vim-doge'
+Plug 'kkoomen/vim-doge', { 'do': { -> doge#install() } }
+
 Plug 'machakann/vim-sandwich'
 
 "rename box
@@ -264,16 +263,6 @@ let g:NERDToggleCheckAllLines = 1
 
 "" doge - for document generate
 """""""""""""""""""""""""
-" Generate comment for current line.
-nmap <silent> <Leader>o <Plug>(doge-generate)
-
-" Interactive mode comment todo-jumping.
-nmap <silent> <TAB> <Plug>(doge-comment-jump-forward)
-nmap <silent> <S-TAB> <Plug>(doge-comment-jump-backward)
-imap <silent> <TAB> <Plug>(doge-comment-jump-forward)
-imap <silent> <S-TAB> <Plug>(doge-comment-jump-backward)
-smap <silent> <TAB> <Plug>(doge-comment-jump-forward)
-smap <silent> <S-TAB> <Plug>(doge-comment-jump-backward)
 
 "
 
@@ -740,103 +729,3 @@ require("cmake-tools").setup {
 }
 EOF
 
-"coc
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" " Extension settings
-" let g:coc_global_extensions = [
-    " \ 'coc-json',
-    " \ 'coc-vimlsp',
-    " \ 'coc-clangd',
-    " \ 'coc-prettier',
-    " \ 'coc-cmake']
-"
-" "转跳时可以不用保存，未保存文件留在 buffer 里
-"
-" "new coc-completion settings
-" """"""""""""""""""""""""""
-" "Use <tab> and <S-tab> to navigate completion list: >
-"
-" function! CheckBackSpace() abort
-    " let col = col('.') - 1
-    " return !col || getline('.')[col - 1]  =~ '\s'
-" endfunction
-"
-  " " " Insert <tab> when previous text is space, refresh completion if not.
-" inoremap <silent><expr> <TAB>
-  " \ coc#pum#visible() ? coc#pum#next(1):
-  " \ CheckBackSpace() ? "\<Tab>" :
-  " \ coc#refresh()
-" inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
-"
-" "Use <c-space> to trigger completion: >
-"
-" if has('nvim')
-  " inoremap <silent><expr> <c-space> coc#refresh()
-" else
-  " inoremap <silent><expr> <c-@> coc#refresh()
-" endif
-"
-" "To make <CR> to confirm selection of selected complete item or notify coc.nvim
-" "to format on enter, use: >
-"
-" inoremap <silent><expr> <CR> coc#pum#visible() ? coc#_select_confirm()
-        " \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-"
-" " GoTo code navigation.
-" nmap <silent> gd <Plug>(coc-definition)
-" nmap <silent> gy <Plug>(coc-type-definition)
-" nmap <silent> gi <Plug>(coc-implementation)
-" nmap <silent> gr <Plug>(coc-references)
-"
-" " Map function and class text objects
-" " NOTE: Requires 'textDocument.documentSymbol' support from the language server.
-" xmap if <Plug>(coc-funcobj-i)
-" omap if <Plug>(coc-funcobj-i)
-" xmap af <Plug>(coc-funcobj-a)
-" omap af <Plug>(coc-funcobj-a)
-" xmap ic <Plug>(coc-classobj-i)
-" omap ic <Plug>(coc-classobj-i)
-" xmap ac <Plug>(coc-classobj-a)
-" omap ac <Plug>(coc-classobj-a)
-"
-"
-" " Use h to show documentation in preview window.
-" nnoremap <silent>K :call <SID>show_documentation()<CR>
-"
-" function! s:show_documentation()
-  " if (index(['vim','help'], &filetype) >= 0)
-    " execute 'h '.expand('<cword>')
-  " elseif (coc#rpc#ready())
-    " call CocActionAsync('doHover')
-  " else
-    " execute '!' . &keywordprg . " " . expand('<cword>')
-  " endif
-" endfunction
-"
-" " Highlight the symbol and its references when holding the cursor.
-" autocmd CursorHold * silent call CocActionAsync('highlight')
-"
-" " Symbol renaming.
-" nmap <leader>rn <Plug>(coc-rename)
-"
-" " Use `[g` and `]g` to navigate diagnostics
-" " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-" nmap <silent> [g <Plug>(coc-diagnostic-prev)
-" nmap <silent> ]g <Plug>(coc-diagnostic-next)
-"
-"
-" "coc.prettier
-" command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
-"
-" vmap <leader>f  <Plug>(coc-format-selected)
-" nmap <leader>f  <Plug>(coc-format)
-"
-" "scroll float window
-" if has('nvim-0.4.0') || has('patch-8.2.0750')
-  " nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-  " nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-  " inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
-  " inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
-  " vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-  " vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-" endif
