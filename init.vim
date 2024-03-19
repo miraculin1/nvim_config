@@ -22,7 +22,10 @@ Plug 'Civitasv/cmake-tools.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/nvim-treesitter-context'
 
-Plug 'morhetz/gruvbox'
+" Plug 'morhetz/gruvbox'
+" Plug 'ellisonleao/gruvbox.nvim'
+" Using Vim-Plug
+Plug 'navarasu/onedark.nvim'
 
 Plug 'skywind3000/asyncrun.vim'
 
@@ -171,7 +174,11 @@ set clipboard=unnamedplus
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:gruvbox_italic=1
 set termguicolors
-colorscheme gruvbox
+" colorscheme gruvbox
+let g:onedark_config={
+  \ 'style' : 'darker',
+  \}
+colorscheme onedark
 "scheme settings end
 
 "settings for look
