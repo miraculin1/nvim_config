@@ -14,8 +14,6 @@ call plug#begin()
 
 " past img in .md
 
-Plug 'ekickx/clipboard-image.nvim'
-
 Plug 'Civitasv/cmake-tools.nvim'
 
 
@@ -26,8 +24,6 @@ Plug 'nvim-treesitter/nvim-treesitter-context'
 " Plug 'ellisonleao/gruvbox.nvim'
 " Using Vim-Plug
 Plug 'navarasu/onedark.nvim'
-
-Plug 'skywind3000/asyncrun.vim'
 
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -67,7 +63,7 @@ Plug 'rafamadriz/friendly-snippets'
 
 " Plug 'lukas-reineke/indent-blankline.nvim'
 " new indent
-Plug 'shellRaining/hlchunk.nvim'
+Plug 'lukas-reineke/indent-blankline.nvim'
 
 Plug 'RRethy/vim-illuminate'
 
@@ -300,6 +296,8 @@ vim.filetype.add({
   extension = {
     launch = 'xml'}
 })
+
+require("ibl").setup()
 
 -- flash(for fast jump)
 --------------------------
@@ -808,22 +806,6 @@ require'treesitter-context'.setup{
   zindex = 20, -- The Z-index of the context window
   on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
 }
-
--- things about indent
-------------------------
-require('hlchunk').setup({
-    indent = {
-        chars = { "│", }, -- 更多的字符可以在 https://unicodeplus.com/ 这个网站上找到
-
-
-        style = {
-            "#81776e",
-        },
-    },
-    blank = {
-        enable = false,
-    }
-})
 
 -- vim-illuminate
 ----------------------
