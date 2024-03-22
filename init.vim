@@ -18,7 +18,7 @@ Plug 'Civitasv/cmake-tools.nvim'
 
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'nvim-treesitter/nvim-treesitter-context'
+" Plug 'nvim-treesitter/nvim-treesitter-context'
 
 " Plug 'morhetz/gruvbox'
 " Plug 'ellisonleao/gruvbox.nvim'
@@ -27,7 +27,6 @@ Plug 'navarasu/onedark.nvim'
 
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'tpope/vim-fugitive'
 
 " Plug 'jiangmiao/auto-pairs'
 Plug 'windwp/nvim-autopairs'
@@ -220,12 +219,6 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
-" " Using Lua functions
-" nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>
-" nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
-" nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
-" nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
-
 " spectre 
 """"""""""""""""""""""""""""
 nnoremap <leader>fr :Spectre<CR>
@@ -297,6 +290,7 @@ vim.filetype.add({
     launch = 'xml'}
 })
 
+-- set up indent
 require("ibl").setup()
 
 -- flash(for fast jump)
@@ -761,7 +755,7 @@ require'nvim-treesitter.configs'.setup {
   auto_install = false,
 
   -- List of parsers to ignore installing (for "all")
-  ignore_install = { "javascript" },
+  ignore_install = {},
 
   ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
   -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
@@ -792,20 +786,20 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 
-require'treesitter-context'.setup{
-  enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-  max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
-  min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
-  line_numbers = true,
-  multiline_threshold = 20, -- Maximum number of lines to collapse for a single context line
-  trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
-  mode = 'cursor',  -- Line used to calculate context. Choices: 'cursor', 'topline'
-  -- Separator between context and content. Should be a single character string, like '-'.
-  -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
-  separator = nil,
-  zindex = 20, -- The Z-index of the context window
-  on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
-}
+-- require'treesitter-context'.setup{
+--   enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+--   max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+--   min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+--   line_numbers = true,
+--   multiline_threshold = 20, -- Maximum number of lines to collapse for a single context line
+--   trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+--   mode = 'cursor',  -- Line used to calculate context. Choices: 'cursor', 'topline'
+--   -- Separator between context and content. Should be a single character string, like '-'.
+--   -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+--   separator = nil,
+--   zindex = 20, -- The Z-index of the context window
+--   on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
+-- }
 
 -- vim-illuminate
 ----------------------
