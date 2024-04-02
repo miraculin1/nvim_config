@@ -91,6 +91,7 @@ Plug 'stevearc/dressing.nvim'
 " code outline
 Plug 'stevearc/aerial.nvim'
 
+Plug 'img-paste-devs/img-paste.vim'
 
 " Initialize plugin system
 call plug#end()
@@ -109,8 +110,6 @@ let mapleader = " "
 :nnoremap <leader><A-h> <C-w>H
 :nnoremap <leader><A-k> <C-w>K
 :nnoremap <leader><A-l> <C-w>L
-
-:nnoremap <leader>p :MarkdownPreviewToggle<CR>
 
 :nnoremap <TAB>j :bn<CR>
 :nnoremap <TAB>k :bp<CR>
@@ -219,9 +218,17 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
-" spectre 
+" spectre
 """"""""""""""""""""""""""""
 nnoremap <leader>fr :Spectre<CR>
+
+" markdown img insert
+autocmd FileType markdown nmap <buffer><silent> <leader>p :call mdip#MarkdownClipboardImage()<CR>
+" there are some defaults for image directory and image name, you can change them
+" let g:mdip_imgdir = 'img'
+" let g:mdip_imgname = 'image'
+autocmd FileType markdown let g:PasteImageFunction = 'g:MarkdownPasteImage'
+autocmd FileType tex let g:PasteImageFunction = 'g:LatexPasteImage'
 
 
 "Airline settings
