@@ -22,8 +22,9 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 " Plug 'morhetz/gruvbox'
 " Plug 'ellisonleao/gruvbox.nvim'
+Plug 'sainnhe/gruvbox-material'
 " Using Vim-Plug
-Plug 'navarasu/onedark.nvim'
+" Plug 'navarasu/onedark.nvim'
 
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -168,11 +169,13 @@ set clipboard=unnamedplus
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:gruvbox_italic=1
 set termguicolors
-" colorscheme gruvbox
-let g:onedark_config={
-  \ 'style' : 'darker',
-  \}
-colorscheme onedark
+" let g:gruvbox_material_background='hard'
+let g:gruvbox_material_foreground='mix'
+colorscheme gruvbox-material
+" let g:onedark_config={
+  " \ 'style' : 'darker',
+  " \}
+" colorscheme onedark
 "scheme settings end
 
 "settings for look
