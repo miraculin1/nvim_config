@@ -94,6 +94,8 @@ Plug 'stevearc/aerial.nvim'
 
 Plug 'img-paste-devs/img-paste.vim'
 
+" " for latex
+Plug 'lervag/vimtex'
 " Initialize plugin system
 call plug#end()
 
@@ -290,6 +292,36 @@ set foldexpr=nvim_treesitter#foldexpr()
 set nofoldenable
 autocmd BufReadPost,FileReadPost * normal zR
 
+
+" vimtex
+" """"""""""""""""""""""""""
+" This is necessary for VimTeX to load properly. The "indent" is optional.
+" Note that most plugin managers will do this automatically.
+filetype plugin indent on
+
+" This enables Vim's and neovim's syntax-related features. Without this, some
+" VimTeX features will not work (see ":help vimtex-requirements" for more
+" info).
+syntax enable
+
+" Viewer options: One may configure the viewer either by specifying a built-in
+" viewer method:
+let g:vimtex_view_method = 'general'
+
+" Or with a generic interface:
+let g:vimtex_view_general_viewer = 'evince'
+" let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
+"
+
+" set output files into build
+let g:vimtex_compiler_latexmk = {
+            \ 'out_dir' : 'build',
+            \}
+
+
+" Most VimTeX mappings rely on localleader and this can be changed with the
+" following line. The default is usually fine and is the symbol "\".
+" let maplocalleader = ","
 
 
 :lua << EOF
